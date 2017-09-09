@@ -5,8 +5,9 @@ int main()
     int state = 0;
     float startTime = 0.0;
     int previousState = 1;
-    float currentTime = 0.0;    
-    while(1)
+    float currentTime = 0.0;  
+    int true = 1;
+    while(true)
       {  
         /* state = 0 driving
            state = 1 stopped
@@ -26,15 +27,16 @@ int main()
                 startTime = seconds();
             }
             currentTime=seconds();
-              if(currentTime-startTime < 2.0)
+              if(currentTime-startTime < 1.5)
               {
                 state = 2; 
-            } else if(currentTime-startTime < 6.0)
+            } else if(currentTime-startTime < 5.0)
             {
                 state = 3;   
             } else
             {
-                state = 1;   
+                state = 1;    
+                true = 0;
             }    
         }    
         else if(analog(2)>DARKNESS_CONSTANT)
@@ -63,13 +65,13 @@ int main()
         else if(state == 2)
         {
             motor(0, 60);
-            motor(2, -100);
+            motor(2, -75);
             
         }
         else if(state == 3)
         {
-            motor(0, -100);
-            motor(2, 60);
+            motor(0, -75);
+            motor(2, 65);
         }
         else
           {
