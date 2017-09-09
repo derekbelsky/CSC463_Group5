@@ -1,34 +1,33 @@
+/* Derek Belsky and Emmitt Frankenberry
+   CSC 463: Robotics
+   Date Due: 9/11/2017 
+*/
+
 #define DARKNESS_CONSTANT 100
 
 int main()
 {
-    int state = 0;
-    float startTime = 0.0;
+    int state = 1;
     int previousState = 1;
-    float currentTime = 0.0;  
-    int true = 1;
-    while(true)
-      {  
-        /* state = 0 driving
-           state = 1 stopped
-           state = 2 left turning
-           state = 3 right turning
-        */
-       
+    
+    float startTime = 0.0;
+    float currentTime = 0.0; 
+    
+    int alive = 1;
+    
+    while(alive)
+    {  
+        // State transitions
         
-        printf("%f\n", seconds());
-        if(digital(15)==1 || digital(14)==1)
-          {
-            state = 1;   
-        }  
-        else if(analog(2)<=DARKNESS_CONSTANT)
-          {
+        // This takes us to a turning state (2 and 3)
+        if(analog(2)<=DARKNESS_CONSTANT)
+        {
             if(previousState!=2&&previousState!=3){
                 startTime = seconds();
             }
             currentTime=seconds();
-              if(currentTime-startTime < 1.5)
-              {
+            if(currentTime-startTime < 1.5)
+            {
                 state = 2; 
             } else if(currentTime-startTime < 5.0)
             {
@@ -36,37 +35,45 @@ int main()
             } else
             {
                 state = 1;    
-                true = 0;
+                alive = 0;
             }    
-        }    
+        } 
+        
+        // This will take us to a driving state (state 0)
         else if(analog(2)>DARKNESS_CONSTANT)
-          {
+        {
             state = 0; 
         }
+        
+        // This will take us to stop state (state 1)
         else
-          {
-            state =1;    
+        {
+            state = 1;    
         }  
         
         
         
-        
+        /* State = 0 driving
+           State = 1 stopped
+           State = 2 left turning
+           State = 3 right turning
+           No State = kill
+        */
         if(state == 0)
-          {
+        {
             motor(0, 30);
             motor(2, 30);
             
         }
         else if(state == 1)
-          {
+        {
             motor(0, 0);
             motor(2, 0);
         }
         else if(state == 2)
         {
             motor(0, 60);
-            motor(2, -75);
-            
+            motor(2, -75);   
         }
         else if(state == 3)
         {
@@ -74,11 +81,12 @@ int main()
             motor(2, 65);
         }
         else
-          {
-            motor(0, 0);
-            motor(2, 0);
-        }  
+        {
+            alive = 0;   
+        } 
+        
         previousState = state;
         
     }
+    
 }
