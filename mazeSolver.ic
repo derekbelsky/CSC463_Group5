@@ -1,0 +1,86 @@
+int turnLeft=0;
+float startTime = 0.0;
+float currentTime = 0.0;
+
+/*************************************
+ * Name: main - to control a loop    *
+ * that will keep the bot running    *
+ * Parameters: NA                    *
+ * Return: 0 - exit the program      *
+ *************************************/
+int main()
+{
+    //Ask Girard for a new phonejack
+    
+    while(1)
+    {
+        chooseAction();  
+    }    
+    return(0);
+}
+
+/*************************************
+ * Name: chooseAction - chooses the  *
+ * appropiate action                 *
+ * Parameters: NA                    *
+ * Return: NA                        *
+ *************************************/
+void chooseAction() {
+    if(digital(14)||turnLeft==1)
+    {
+        turning90();
+    }else  if(!digital(15))
+    {
+        driftRight();
+    } else
+    {        
+        sharpLeft();
+    }
+    
+} 
+
+/*************************************
+ * Name: turning90 - turns about 90  *
+ * degrees when the front is pressed *
+ * Parameters: NA                    *
+ * Return: NA                        *
+ *************************************/
+void turning90()
+{
+    if(turnLeft==0){
+            startTime=seconds();
+            turnLeft=1;
+        }
+        currentTime=seconds();
+        if(currentTime-startTime<4.0){
+            motor(0, 50);   
+            motor(2, -70);
+        }
+        else if(currentTime-startTime>4.0){
+            turnLeft=0;
+        } 
+} 
+
+/*************************************
+ * Name: driftRight - turns slightly *
+ * right when no sensor is pressed   *
+ * Parameters: NA                    *
+ * Return: NA                        *
+ *************************************/
+void driftRight()
+{
+    motor(0, 30);
+    motor(2, 55);
+} 
+
+/*************************************
+ * Name: sharpLeft - turns left when *
+ * the right sensor touches the wall *
+ * Parameters: NA                    *
+ * Return: NA                        *
+ *************************************/
+void sharpLeft()
+{
+    motor(0, 100);   
+    motor(2, 0);
+}    
