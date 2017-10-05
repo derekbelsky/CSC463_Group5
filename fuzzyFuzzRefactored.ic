@@ -1,0 +1,106 @@
+/**********************************************
+ * Title: Line Following Fuzzy                *
+ * Authors: Derek Belsky, Emmitt Frankenberry *
+ * Purpose: To make the robot follow a line   *
+ *  using fuzzy logic                         *
+ **********************************************/
+
+// Global Variables that are needed throughout the program
+float positive = 0.0;
+float negative = 0.0;
+float crispRight = 0.0;
+float crispLeft = 0.0;
+
+/**********************************************
+ * Title: main                                *
+ * Purpose: Calls the fuzzification values    *
+ *  repeatly for the entire program to        *
+ *  constantly update the turn and spin the   *
+ *  motors                                    *
+ **********************************************/
+int main()
+{   
+    while(1)
+    {  
+	int crispInputValue = analog(2) - analog(3);
+
+        //Fuzzify the input
+        inputFuzzification(crispInputValue);
+         
+        outputFuzzification();
+            
+        
+        motor(0, (int)crispRight);
+        motor(2, (int)crispLeft); 
+
+	//DEBUG COMMENTS 
+        //2 is Right; 3 is left
+        //printf("P: %d  N: %d\n",positive, negative);
+        
+        //printf("R: %d  L: %d\n",crispRight, crispLeft);
+        //printf("Left: %d",analog(3));        
+        
+    } 
+    return(0);
+} 
+
+/**********************************************
+ * Title: inputFuzzification                  *
+ * Purpose: Takes the crispInputValue and     *
+ *  fuzzifies the positive and negative       *
+ *  fuzzy input values                        *
+ * Parameter(s): crispInputValue is used to   *
+ *  determine the value on the input fuzzy    *
+ *  table                                     *
+ **********************************************/
+void inputFuzzification(int crispInputValue)
+{
+	//Input Fuzzification
+        if(crispInputValue > 80)
+        {
+            positive = 1.0;   
+        }    
+        else if(crispInputValue <= 80 && crispInputValue > 0)
+          {
+            positive = .0125*(float)(crispInputValue);
+        } 
+        else if(crispInputValue >= -80 && crispInputValue < 0)
+          {
+            negative = -.0125*(float)(crispInputValue);
+        } 
+        else
+          {
+            negative = 1.0;
+        } 
+}
+
+/**********************************************
+ * Title: outputFuzzification                 *
+ * Purpose: Takes the positiva and negative   *
+ *  fuzzified iput values and maps those to   *
+ *  the output table for a crisp output       *
+ **********************************************/
+void outputFuzzification()
+{
+	// Output fuzzification
+        if(positive >= .5)
+          {
+            crispRight = 75.0;
+            crispLeft = 5.0;
+        }    
+        else if(positive < .5 && (positive != 0.0))
+          {
+            crispRight = 37.5+(75.0*(positive));
+            crispLeft = 37.5-(75.0*(positive));
+        } 
+        else if(negative < .5)
+          {
+            crispRight = 37.5-(75.0*(negative));
+            crispLeft = 37.5+(75.0*(negative));
+        }
+        else
+          {
+            crispRight = 5.0;
+            crispLeft = 75.0;
+        }
+}
