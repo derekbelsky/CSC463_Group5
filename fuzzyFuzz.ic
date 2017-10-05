@@ -1,0 +1,63 @@
+
+int main()
+{   
+    while(1)
+    {  
+        int crispInputValue = analog(2) - analog(3);
+        float positive = 0.0;
+        float negative = 0.0;
+        float crispRight = 0.0;
+        float crispLeft = 0.0;
+        
+        //Input Fuzzification
+        if(crispInputValue > 80)
+          {
+            positive = 1.0;   
+        }    
+        else if(crispInputValue <= 80 && crispInputValue > 0)
+          {
+            positive = .0125*(float)(crispInputValue);
+        } 
+        else if(crispInputValue >= -80 && crispInputValue < 0)
+          {
+            negative = -.0125*(float)(crispInputValue);
+        } 
+        else
+          {
+            negative = 1.0;
+        } 
+        
+        
+        // Output fuzzification
+        if(positive >= .5)
+          {
+            crispRight = 75.0;
+            crispLeft = 5.0;
+        }    
+        else if(positive < .5 && (positive != 0.0))
+          {
+            crispRight = 37.5+(75.0*(positive));
+            crispLeft = 37.5-(75.0*(positive));
+        } 
+        else if(negative < .5)
+          {
+            crispRight = 37.5-(75.0*(negative));
+            crispLeft = 37.5+(75.0*(negative));
+        }
+        else
+          {
+            crispRight = 5.0;
+            crispLeft = 75.0;
+        }    
+        
+        motor(0, (int)crispRight);
+        motor(2, (int)crispLeft);  
+        //2 is Right; 3 is left
+        //printf("P: %d  N: %d\n",positive, negative);
+        
+        //printf("R: %d  L: %d\n",crispRight, crispLeft);
+        //printf("Left: %d",analog(3));        
+        
+    } 
+    return(0);
+}    
