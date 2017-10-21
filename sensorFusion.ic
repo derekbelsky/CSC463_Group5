@@ -1,16 +1,33 @@
-/* state 0 moving forward
+/****************************************************
+ * Title: Maze Navigation Sensor Fusion             *
+ * Author: Derek Belsky and Emmitt Frankenberry     *
+ * Purpose: To solve a maze using sensor fusion     *
+ *           between a reflective-opto senseor and  *
+ *           a photo-sensor                         *
+ ****************************************************/
+
+/* State information to tell what event we are currently in
+   state 0 moving forward
    state 1 moving backward
    state 2 turning left
-   state 3 Exit
 */
 #define RO 200
 #define LS 200
 
+//Global variables
 int state = 0;
 float timer = 0.0;
 int lock = 0; // 0 open 1 closed
 
 
+/***********************************
+ * Title: movingForward            *
+ * Returns: NA                     *
+ * Parameters: NA                  *
+ * Purpose: To move the robot for- *
+ *    ward and change state when   *
+ *    needed.                      *
+ ***********************************/
 void movingForward()
 {
     if(analog(3) < RO && analog(2) > LS)
@@ -32,6 +49,14 @@ void movingForward()
     }
 }
 
+/***********************************
+ * Title: movingBackward           *
+ * Returns: NA                     *
+ * Parameters: NA                  *
+ * Purpose: To move the robot back *
+ *    for 1.5 seconds then move to *
+ *    to the turningLeft state.    *
+ ***********************************/
 void movingBackward()
 {
     
@@ -52,6 +77,14 @@ void movingBackward()
     
 } 
 
+/***********************************
+ * Title: turningLeft              *
+ * Returns: NA                     *
+ * Parameters: NA                  *
+ * Purpose: To turn the robot 90   *
+ *    degrees to the left and then *
+ *    return to movingForward.     *
+ ***********************************/
 void turningLeft()
 {
     if((seconds() - timer) > 5.55)
@@ -67,11 +100,14 @@ void turningLeft()
     
 }
 
-void exit()
-{
-    motor(0, 0);
-    motor(2, 0);   
-}    
+/***********************************
+ * Title: main                     *
+ * Returns: NA                     *
+ * Parameters: NA                  *
+ * Purpose: To go into the current *
+ *    state method and continue to *
+ *    run the code.                *
+ ***********************************/
 int main()
 {
     while(1)
@@ -87,10 +123,6 @@ int main()
         else if (state == 2)
           {
             turningLeft();
-        }
-        else 
-          {
-            exit();
-        }    
+        }   
     }    
 }    
