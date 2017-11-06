@@ -1,0 +1,117 @@
+/***********************************************
+ * Authors: Derek Belsky & Emmitt Frankenberry *
+ * Title: Tabular Sarsa                        *
+ * Purpose: Robot is attempting to use tabular *
+ *   sarsa to attempt to solve a maze.         *
+ ***********************************************/
+int actionRewardTable[3];
+
+/***********************************************
+ * movingForward()                             *
+ * Purpose: When moving forward it gains a     *
+ *   reward but when a touch sensor is pressed *
+ *   it stops moving and punishes the action.  *
+ ***********************************************/
+void movingForward()
+{
+    if(digital(15) || digital(14))
+    {
+        motor(0,0);
+        motor(2,0);
+        actionRewardTable[0] -= 99;
+    }   
+    else
+    {
+        motor(0, 50);
+        motor(2, 50); 
+        actionRewardTable[0] += 1;
+    }    
+}    
+
+/***********************************************
+ * turnLeft()                                  *
+ * Purpose: To turn left for 1 second and then *
+ *   punish the action.                        *
+ ***********************************************/
+void turnLeft()
+{
+    float startTime = seconds();    
+    while(seconds() < (startTime + 1.0))
+      {
+        motor(0, -100);
+        motor(2, 0); 
+    }    
+    actionRewardTable[1] -= 100;
+}   
+
+/***********************************************
+ * turnRight()                                 *
+ * Purpose: To turn right for 1 second and     *
+ *   then harshly punish the action.           *
+ ***********************************************/
+void turnRight()
+{
+    float startTime = seconds();    
+    while(seconds() < (startTime + 1.0))
+      {
+        motor(0, 0);
+        motor(2, -100); 
+    }    
+    actionRewardTable[2] -= 320;
+} 
+
+/***********************************************
+ * findHighestQ()                              *
+ * Purpose: To find the highest rewarded action*
+ *   and return that state.                    *
+ ***********************************************/
+int findHighestQ()
+{
+    int largest = actionRewardTable[0];
+    int currentPosition=0;
+    int i; 
+    for(i = 1; i<3; i++)
+    {
+        if(actionRewardTable[i] > largest)
+        {
+            currentPosition = i;
+        }    
+    } /*
+    if(actionRewardTable[0] >= actionRewardTable[1])
+      {
+        return 0;
+    } else
+      {
+        return 1;
+    }*/
+    
+    return currentPosition;
+}    
+
+/************************************************
+ * main()                                       *
+ * Purpose: Setups the reward table and puts    *
+ *   the program in a loop to run.              *
+ ************************************************/
+int main()
+{
+    actionRewardTable[0] = 0; // Move forward action
+    actionRewardTable[1] = 0; // turn 90 left action
+    actionRewardTable[2] = 0;
+    
+    while(1)
+    {
+        int state = findHighestQ();
+        if(state == 1)
+        {
+            turnLeft();
+        }else if(state==2)
+        {
+            turnRight();
+        } else
+        {
+            movingForward();
+        }
+        
+    }        
+}
