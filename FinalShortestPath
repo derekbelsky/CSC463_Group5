@@ -1,0 +1,143 @@
+/*****************************************
+ * Derek Belsky and Emmitt Frankenberry  *
+ * CSC 463 - Robotics                    *
+ * 12/13/17                              *
+ * Title: Shortest Path                  *
+ * Purpose: Follow the line and move a   *
+ *  block to the end of the course       *
+ *****************************************/
+#define SENSOR_READ 100
+int light_grabbed = 0;
+int total_intersections = 0;
+
+int main(){
+    while(1){  
+        if((analog(3)>SENSOR_READ) && ((analog(4)>SENSOR_READ) && (analog(2)>SENSOR_READ)) && !light_grabbed)
+        {  
+            backup(.7);
+            turn_left90(4.0);
+        }
+        else if(digital(15) && digital(14) && !light_grabbed)
+        {
+            backup(7.0);
+            turn_right90(4.5);
+        }
+        else
+        {
+            stay_on_line(1); 
+            if((analog(5) < 120 || analog(6) < 120) && !light_grabbed)
+            {
+                turn_right90(14.0);
+                light_grabbed = 1;
+
+            }    
+        }   
+        
+    }
+} 
+/**********************************************
+ * stay_on_line(int)                          *
+ * Purpose: Keeps the robot on the line using *
+ *  fuzzy logic.                              *
+ **********************************************/
+void stay_on_line(int negative)
+{
+    int crispInputValue = analog(2) - analog(4);
+        float positive = 0.0;
+        float negative = 0.0;
+        float crispRight = 0.0;
+        float crispLeft = 0.0;
+        
+        //Input Fuzzification
+        if(crispInputValue > 80)
+          {
+            positive = 1.0;   
+        }    
+        else if(crispInputValue <= 80 && crispInputValue > 0)
+          {
+            positive = .0125*(float)(crispInputValue);
+        } 
+        else if(crispInputValue >= -80 && crispInputValue < 0)
+          {
+            negative = -.0125*(float)(crispInputValue);
+        } 
+        else
+          {
+            negative = 1.0;
+        } 
+        
+        
+        // Output fuzzification
+        if(positive >= .5)
+          {
+            crispRight = 75.0;
+            crispLeft = 5.0;
+        }    
+        else if(positive < .5 && (positive != 0.0))
+          {
+            crispRight = 37.5+(75.0*(positive));
+            crispLeft = 37.5-(75.0*(positive));
+        } 
+        else if(negative < .5)
+          {
+            crispRight = 37.5-(75.0*(negative));
+            crispLeft = 37.5+(75.0*(negative));
+        }
+        else
+          {
+            crispRight = 5.0;
+            crispLeft = 75.0;
+        }    
+        
+        motor(0, (int)(crispRight));
+        motor(2, (int)(crispLeft));  
+
+}   
+
+/******************************************
+ * turn_left90(float)                     *
+ * Purpose: turns left for a given amount *
+ * of time that is given in the parameter *
+ ******************************************/
+void turn_left90(float elapsed_time)
+{
+    float start = seconds();
+    while((seconds() - start) < elapsed_time)
+    {
+        motor(0, 75);
+        motor(2, -100);
+    }   
+    
+} 
+
+/******************************************
+ * turn_right90(float)                    *
+ * Purpose: turns right for a given amount*
+ * of time that is given in the parameter *
+ ******************************************/
+void turn_right90(float elapsed_time)
+{
+    float start = seconds();
+    while((seconds() - start) < elapsed_time)
+    {
+        motor(0, -100);
+        motor(2, 100);
+    }   
+    
+} 
+
+/******************************************
+ * backup(float)                          *
+ * Purpose: backups for a given amount    *
+ * of time that is given in the parameter *
+ ******************************************/
+void backup(float elapsed_time)
+{
+    float start = seconds();
+    while((seconds() - start) < elapsed_time)
+    {
+        motor(0, -50);
+        motor(2, -50);
+    }   
+    
+} 
